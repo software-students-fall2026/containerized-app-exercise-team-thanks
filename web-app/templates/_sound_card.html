@@ -1,0 +1,13 @@
+<article class="sound-card">
+    <h2><a href="{{ url_for('sound_detail', sound_id=sound._id) }}">{{ sound.name }}</a></h2>
+    <p class="subtitle">{{ sound.material }}</p>
+    <p>Instrument: {{ sound.instrument.type if sound.instrument else "not generated yet" }}</p>
+    <p>Note: {{ sound.analysis.note if sound.analysis else "-" }}</p>
+    {% if sound.analysis and sound.analysis.tags %}
+    <ul class="tags">
+        {% for tag in sound.analysis.tags %}
+        <li>{{ tag }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</article>

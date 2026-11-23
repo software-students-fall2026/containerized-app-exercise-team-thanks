@@ -11,6 +11,10 @@
         {% if current_user.is_authenticated %}
         <nav class="navbar">
             <a class="brand" href="{{ url_for('home') }}">TACTILE</a>
+            <form action="{{ url_for('search') }}" method="GET">
+                <input type="text" name="q" placeholder="Search sounds" value="{{ request.args.get('q', '') }}">
+                <button type="submit">Search</button>
+            </form>
             <a href="{{ url_for('logout') }}">Log out</a>
         </nav>
         {% endif %}

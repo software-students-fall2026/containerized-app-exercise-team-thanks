@@ -1,6 +1,7 @@
 """Flask web app for TACTILE."""
 
 import os
+import re
 import pymongo
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, abort
@@ -135,6 +136,33 @@ def sound_detail(sound_id):
         abort(404)
 
     return render_template("sound.html", sound=sound)
+
+
+@app.route("/search")
+@flask_login.login_required
+def search():
+    """Search the user's sounds by name or material, and filter by instrument."""
+    user_id = flask_login.current_user.id
+    text = request.args.get("q", "").strip()
+    instrument = request.args.get("instrument", "")
+
+    query = {"user_id": user_id}
+    if text:
+        pattern = {"$regex": re.escape(text), "$options": "i"}
+        query["$or"] = [{"name": pattern}, {"material": pattern}]
+    if instrument:
+        query["instrument.type"] = instrument
+
+    sounds = list(db.sounds.find(query).sort("created_at", -1))
+    instruments = sorted(db.sounds.distinct("instrument.type", {"user_id": user_id}))
+
+    return render_template(
+        "search.html",
+        sounds=sounds,
+        text=text,
+        instrument=instrument,
+        instruments=instruments,
+    )
 
 
 @app.route("/logout")

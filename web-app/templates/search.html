@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Search · Tactile{% endblock %}
+
+{% block content %}
+<h1 class="white">Search</h1>
+
+<form class="search-form" action="{{ url_for('search') }}" method="GET">
+    <input type="text" name="q" placeholder="Name or material" value="{{ text }}">
+    <select name="instrument">
+        <option value="">All instruments</option>
+        {% for name in instruments %}
+        <option value="{{ name }}" {% if name == instrument %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Search</button>
+</form>
+
+{% if sounds %}
+<p class="subtitle">{{ sounds | length }} sounds found</p>
+<section class="sound-grid">
+    {% for sound in sounds %}
+    {% include "_sound_card.html" %}
+    {% endfor %}
+</section>
+{% else %}
+<p class="empty">No sounds match your search.</p>
+{% endif %}
+{% endblock %}
