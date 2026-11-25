@@ -3,6 +3,7 @@
 import os
 import re
 import pymongo
+import gridfs
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, abort
 from bson.objectid import ObjectId
@@ -10,6 +11,7 @@ from bson.errors import InvalidId
 import flask_login
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo.errors import DuplicateKeyError
+from pymongo.database import Database
 
 load_dotenv()
 
@@ -20,6 +22,8 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 db = connection[os.getenv("MONGO_DBNAME")]
+
+fs = gridfs.GridFS(db) if isinstance(db, Database) else None
 
 users = db.users
 users.create_index("email", unique=True)
@@ -119,6 +123,37 @@ def home():
     return render_template(
         "home.html", username=flask_login.current_user.username, sounds=list(sounds)
     )
+
+@app.route("/sounds/add", methods=["POST", "GET"])
+@flask_login.login_required
+def add_sound():
+    if request.method == "POST":
+        """Upload a sound snippet file"""
+        name = request.form.get("name").strip()
+        file = request.files.get("audio_file")
+
+        if not name:
+            return redirect(url_for("home"))
+
+        audio_file_id = None
+        if file and file.filename and fs is not None:
+            audio_file_id = fs.put(
+                file.read(),
+                filename = file.filename,
+                file_type = file.mimetype,
+                user_id=flask_login.current_user.id,
+            )
+
+        db.sounds.insert_one({
+            "user_id": flask_login.current_user.id,
+            "name": name,
+            "audio_file_id": audio_file_id,
+        })
+
+        return redirect(url_for("home"))
+
+    else:
+        return render_template("add_sound.html")
 
 
 @app.route("/sounds/<sound_id>")
