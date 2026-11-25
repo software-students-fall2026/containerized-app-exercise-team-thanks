@@ -137,6 +137,48 @@ def sound_detail(sound_id):
 
     return render_template("sound.html", sound=sound)
 
+@app.route("/sounds/<sound_id>/edit", methods=["GET", "POST"])
+@flask_login.login_required
+def edit_sound(sound_id):
+    """Allow users to edit their own sounds."""
+    try:
+        query = {
+            "_id": ObjectId(sound_id),
+            "user_id": flask_login.current_user.id,
+        }
+        sound = db.sounds.find_one(query)
+    except InvalidId:
+        abort(404)
+
+    if sound is None:
+        abort(404)
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        material = request.form.get("material", "").strip()
+        instrument = request.form.get("instrument", "").strip()
+
+        if not name or not material or not instrument:
+            return render_template(
+                "edit_sound.html",
+                sound=sound,
+                error="All fields are required.",
+            ), 400
+
+        db.sounds.update_one(
+            query,
+            {
+                "$set": {
+                    "name": name,
+                    "material": material,
+                    "instrument.type": instrument,
+                }
+            },
+        )
+
+        return redirect(url_for("sound_detail", sound_id=sound_id))
+
+    return render_template("edit_sound.html", sound=sound)
 
 @app.route("/search")
 @flask_login.login_required
