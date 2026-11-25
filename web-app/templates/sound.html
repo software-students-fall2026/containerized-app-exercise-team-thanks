@@ -10,5 +10,15 @@
     <p class="subtitle">{{ sound.material }}</p>
     <p>Instrument: {{ sound.instrument.type if sound.instrument else "not generated yet" }}</p>
     <p>Note: {{ sound.analysis.note if sound.analysis else "-" }}</p>
+
+    <h2>Audio Preview</h2>
+
+    <audio id="audio-player">
+    
+    </audio>
+
+    <button id="play-pause-btn" type="button" disabled>Play</button>
+
 </article>
+<script src="{{url_for('static', filename='audio-player.js')}}"></script>
 {% endblock %}
