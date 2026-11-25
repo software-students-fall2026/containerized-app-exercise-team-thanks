@@ -18,7 +18,22 @@
     </audio>
 
     <button id="play-pause-btn" type="button" disabled>Play</button>
+    <h2>Choose a Music Genre</h2>
+    
+    <label for="genre-select">Genre:</label>
+    
+    <select id="genre-select">
+        <option value="">Select a genre</option>
+        <option value="pop">Pop</option>
+        <option value="rock">Rock</option>
+        <option value="jazz">Jazz</option>
+        <option value="hip-hop">Hip-Hop</option>
+        <option value="electronic">Electronic</option>
+        <option value="classical">Classical</option>
+    </select>
+    <p id="selected-genre"></p>
 
 </article>
+<script src="{{url_for('static', filename='genre-selection.js')}}"></script>
 <script src="{{url_for('static', filename='audio-player.js')}}"></script>
 {% endblock %}
