@@ -10,5 +10,9 @@
     <p class="subtitle">{{ sound.material }}</p>
     <p>Instrument: {{ sound.instrument.type if sound.instrument else "not generated yet" }}</p>
     <p>Note: {{ sound.analysis.note if sound.analysis else "-" }}</p>
+
+    <a href="{{ url_for('edit_sound', sound_id=sound._id) }}">
+     Edit Sound</a>
+
 </article>
 {% endblock %}
