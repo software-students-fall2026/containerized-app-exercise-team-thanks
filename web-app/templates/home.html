@@ -5,6 +5,7 @@
 {% block content %}
 <h1 class="white">Welcome {{ username }}!</h1>
 <p class="subtitle">Your material orchestra · {{ sounds | length }} sounds</p>
+<a class="btn" href="{{ url_for('add_sound') }}">Add Sound</a>
 
 {% if sounds %}
 <section class="sound-grid">

@@ -12,10 +12,11 @@ flask = "*"
 flask-login = "*"
 
 [dev-packages]
-pytest = "*"
 pytest-flask = "*"
 mongomock = "*"
 coverage = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.10"
