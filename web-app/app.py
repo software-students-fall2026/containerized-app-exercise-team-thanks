@@ -5,7 +5,7 @@ import re
 import pymongo
 import gridfs
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import Flask, render_template, request, redirect, url_for, abort, Response
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 import flask_login
@@ -172,6 +172,28 @@ def sound_detail(sound_id):
 
     return render_template("sound.html", sound=sound)
 
+@app.route("/sounds/<sound_id>/audio")
+@flask_login.login_required
+def play_audio(sound_id):
+    try:
+        sound=db.sounds.find_one({
+            "_id": ObjectId(sound_id),
+            "user_id": flask_login.current_user.id
+        
+        })
+    except InvalidId:
+        abort(404)
+    if sound is None or not sound.get("audio_file_id"):
+        abort(404)
+    try:
+        audio_file=fs.get(sound["audio_file_id"])
+    except gridfs.errors.NoFile:
+        abort(404)
+    return Response(
+        audio_file.read(),
+        mimetype=audio_file.file_type or "application/octet-stream"
+
+    )
 
 @app.route("/search")
 @flask_login.login_required

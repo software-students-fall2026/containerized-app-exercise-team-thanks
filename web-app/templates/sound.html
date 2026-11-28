@@ -13,11 +13,8 @@
 
     <h2>Audio Preview</h2>
 
-    <audio id="audio-player">
-    
-    </audio>
-
-    <button id="play-pause-btn" type="button" disabled>Play</button>
+    <audio id="audio-player" src="{{url_for('play_audio', sound_id=sound._id)}}"></audio>
+    <button id="play-pause-btn" type="button">Play</button>
     <h2>Choose a Music Genre</h2>
     
     <label for="genre-select">Genre:</label>
